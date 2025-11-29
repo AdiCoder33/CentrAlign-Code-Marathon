@@ -114,7 +114,7 @@ export const createForm = async (
   ownerId: Types.ObjectId,
   prompt: string,
   options?: { useMemory?: boolean }
-): Promise<FormDocument> => {
+): Promise<{ form: FormDocument; source: "llm" | "fallback" }> => {
   const useMemory = options?.useMemory ?? true;
   const timings: Record<string, number> = {};
 
@@ -160,7 +160,7 @@ export const createForm = async (
   const promptWithHistory = buildPromptWithHistory(prompt, historySnippet);
 
   const llmStart = Date.now();
-  const { schema, summary, tags } =
+  const { schema, summary, tags, source } =
     await generateFormSchemaFromPrompt(promptWithHistory);
   timings.llmMs = Date.now() - llmStart;
 
@@ -197,11 +197,11 @@ export const createForm = async (
   }
 
   console.log(
-    `[forms] Created form ${form._id} for owner ${ownerId.toString()} (embedding ${
+    `[forms] Created form ${form._id} for owner ${ownerId.toString()} source=${source} (embedding ${
       formEmbedding?.length || 0
     }) timings=${JSON.stringify(timings)}`
   );
-  return form;
+  return { form, source };
 };
 
 export const getUserForms = async (

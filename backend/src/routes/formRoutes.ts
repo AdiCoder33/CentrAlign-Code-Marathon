@@ -22,12 +22,12 @@ router.post(
         res.status(400).json({ message: "Prompt is required" });
         return;
       }
-      const form = await createForm(
+      const { form, source } = await createForm(
         new Types.ObjectId(req.user!.id),
         prompt,
         { useMemory: useMemory !== false }
       );
-      res.json(form);
+      res.json({ form, source });
     } catch (err) {
       next(err);
     }

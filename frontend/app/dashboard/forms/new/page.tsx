@@ -20,6 +20,7 @@ export default function NewFormPage() {
   const router = useRouter();
   const [prompt, setPrompt] = useState("");
   const [form, setForm] = useState<FormResponse | null>(null);
+  const [source, setSource] = useState<string | null>(null);
   const [referenceMedia, setReferenceMedia] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,11 +32,13 @@ export default function NewFormPage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await apiClient<FormResponse>("/forms/generate", {
+      const data = await apiClient<any>("/forms/generate", {
         method: "POST",
         body: JSON.stringify({ prompt, useMemory }),
       });
-      setForm(data);
+      const nextForm = data.form || data;
+      setForm(nextForm as FormResponse);
+      setSource(data.source || null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not generate form");
     } finally {
@@ -105,6 +108,11 @@ export default function NewFormPage() {
               Open form details
             </button>
           </div>
+          {source && (
+            <p className="muted" style={{ marginBottom: 8 }}>
+              Generated via: {source === "llm" ? "LLM" : "Fallback"}
+            </p>
+          )}
           <FormBuilderPreview schema={form.schema} />
           <div style={{ marginTop: 16 }}>
             <h4>Attach reference images (optional)</h4>

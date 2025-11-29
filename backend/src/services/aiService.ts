@@ -181,6 +181,7 @@ export interface GeneratedMeta {
   schema: FormSchema;
   summary: string;
   tags: string[];
+  source: "llm" | "fallback";
 }
 
 export const generateFormSchemaFromPrompt = async (
@@ -201,5 +202,11 @@ export const generateFormSchemaFromPrompt = async (
   const summary = deriveSummary(prompt, schema);
   const tags = deriveTags(prompt, schema.fields);
 
-  return { schema, summary, tags };
+  const source: "llm" | "fallback" = llmResponse ? "llm" : "fallback";
+
+  if (source === "fallback") {
+    console.warn("[ai] Falling back to deterministic schema");
+  }
+
+  return { schema, summary, tags, source };
 };
