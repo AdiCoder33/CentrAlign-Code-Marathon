@@ -10,6 +10,18 @@ import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
 
+const defaultOrigins = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "https://centr-align-code-marathon.vercel.app/",
+  "https://centralign-code-marathon.vercel.app",
+];
+
+const allowedOrigins = (config.frontendOrigin || "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
+
 app.use(
   cors({
     origin: true, // reflect request origin (allows deployed frontend)
