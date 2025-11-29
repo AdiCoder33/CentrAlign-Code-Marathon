@@ -10,9 +10,14 @@ import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
 
+const allowedOrigins = (config.frontendOrigin || "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: "*",
+    origin: allowedOrigins.length ? allowedOrigins : "*",
   })
 );
 app.use(express.json({ limit: "5mb" }));

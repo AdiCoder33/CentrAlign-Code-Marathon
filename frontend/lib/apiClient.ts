@@ -3,7 +3,8 @@
 import { getToken } from "./auth";
 
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  "https://centralign-code-marathon.onrender.com";
 
 export const apiClient = async <T>(
   path: string,

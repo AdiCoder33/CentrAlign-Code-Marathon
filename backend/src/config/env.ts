@@ -45,6 +45,7 @@ export interface AppConfig {
     apiKey: string;
     indexName: string;
   };
+  frontendOrigin: string;
 }
 
 export const config: AppConfig = {
@@ -70,4 +71,6 @@ export const config: AppConfig = {
     apiKey: process.env.PINECONE_API_KEY || "",
     indexName: process.env.PINECONE_INDEX_NAME || "",
   },
+  frontendOrigin:
+    process.env.FRONTEND_ORIGIN || "http://localhost:3000,http://localhost:3001",
 };
