@@ -108,8 +108,14 @@ const deriveTags = (prompt: string, fields: FormField[]): string[] => {
 };
 
 const parseJsonSafe = (text: string): FormSchema | null => {
+  const cleaned = text
+    .trim()
+    .replace(/^```json/i, "")
+    .replace(/^```/, "")
+    .replace(/```$/, "")
+    .trim();
   try {
-    return JSON.parse(text) as FormSchema;
+    return JSON.parse(cleaned) as FormSchema;
   } catch {
     return null;
   }
@@ -118,7 +124,8 @@ const parseJsonSafe = (text: string): FormSchema | null => {
 // Placeholder LLM call. Swap this implementation with a real provider using config.llmApiKey.
 const callLLM = async (userPrompt: string): Promise<FormSchema | null> => {
   if (!config.llmApiKey) return null;
-  const model = process.env.LLM_MODEL || "google/gemma-2-9b-it";
+  const model =
+    process.env.LLM_MODEL || "google/gemma-3n-e4b-it:free";
   const body = {
     model,
     messages: [
