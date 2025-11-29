@@ -126,11 +126,12 @@ const callLLM = async (userPrompt: string): Promise<FormSchema | null> => {
   if (!config.llmApiKey) return null;
   const model =
     process.env.LLM_MODEL || "google/gemma-3n-e4b-it:free";
+  const combinedPrompt = `${SYSTEM_PROMPT}\n\nUser prompt:\n${userPrompt}`;
   const body = {
     model,
     messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: userPrompt },
+      // Some models (e.g., gemma free) don't support system messages; combine into user content.
+      { role: "user", content: combinedPrompt },
     ],
     temperature: 0.2,
   };
