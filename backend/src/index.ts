@@ -13,7 +13,7 @@ const app = express();
 const defaultOrigins = [
   "http://localhost:3000",
   "http://localhost:3001",
-  "https://centr-align-code-marathon.vercel.app",
+  "https://centr-align-code-marathon.vercel.app/",
   "https://centralign-code-marathon.vercel.app",
 ];
 
