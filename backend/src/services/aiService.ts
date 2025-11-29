@@ -117,11 +117,42 @@ const parseJsonSafe = (text: string): FormSchema | null => {
 
 // Placeholder LLM call. Swap this implementation with a real provider using config.llmApiKey.
 const callLLM = async (userPrompt: string): Promise<FormSchema | null> => {
-  const composedPrompt = `${SYSTEM_PROMPT}\n\nUser prompt:\n${userPrompt}`;
-  void composedPrompt; // placeholder to avoid unused warning until provider is wired
   if (!config.llmApiKey) return null;
-  // Intentionally returning null to use deterministic fallback; integrate provider here.
-  return null;
+  const model = process.env.LLM_MODEL || "google/gemma-2-9b-it";
+  const body = {
+    model,
+    messages: [
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "user", content: userPrompt },
+    ],
+    temperature: 0.2,
+  };
+
+  try {
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${config.llmApiKey}`,
+      },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      console.warn("[ai] LLM request failed", res.status, await res.text());
+      return null;
+    }
+    const data = (await res.json()) as any;
+    const content =
+      data?.choices?.[0]?.message?.content ||
+      data?.choices?.[0]?.text ||
+      "";
+    if (!content) return null;
+    const parsed = parseJsonSafe(content.trim());
+    return parsed;
+  } catch (err) {
+    console.warn("[ai] LLM call error", err);
+    return null;
+  }
 };
 
 const fallbackSchema = (prompt: string): FormSchema => ({
