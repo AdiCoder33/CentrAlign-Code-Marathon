@@ -4,7 +4,7 @@ import { getToken } from "./auth";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
-  "https://centralign-code-marathon.onrender.com";
+  "https://centralign-code-marathon.onrender.com/api";
 
 export const apiClient = async <T>(
   path: string,

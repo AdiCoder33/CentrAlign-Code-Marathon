@@ -22,6 +22,7 @@ Environment variables:
 - `EMBEDDING_API_KEY`, `EMBEDDING_MODEL` – embedding provider creds/model (placeholder implementation by default)
 - `USE_PINECONE_MEMORY` (true/false), `PINECONE_API_KEY`, `PINECONE_INDEX_NAME` – optional Pinecone vector store
 - `MEMORY_TOP_K` (default 5), `MEMORY_MAX_FIELDS_PER_FORM` (default 20) – retrieval limits
+- `FRONTEND_ORIGIN` – comma-separated origins allowed by backend CORS (e.g., `https://centr-align-code-marathon.vercel.app`)
 - `PORT` (optional) – backend port (defaults to 4000)
 - `NEXT_PUBLIC_API_BASE_URL` – frontend calls (e.g., `http://localhost:4000`)
 
@@ -81,3 +82,23 @@ This computes missing embeddings and optionally upserts to Pinecone when enabled
 - Embedding quality depends on chosen model/provider and incurs API cost.
 - Pinecone integration is stubbed for now; swap in a real client.
 - Could add better tagging/classification, caching of retrievals, and richer summarization.
+
+## Deployment notes
+
+Backend (e.g., Render):
+- Root directory: `backend`
+- Build: `npm install && npm run build`
+- Start: `npm start` (Render provides `PORT`)
+- Env vars required: `MONGODB_URI`, `JWT_SECRET`, `CLOUDINARY_*`, plus optional `LLM_API_KEY`, `EMBEDDING_*`, `USE_PINECONE_MEMORY`, `FRONTEND_ORIGIN`
+- Ensure Atlas IP access allows your host’s outbound IP or `0.0.0.0/0` (if acceptable).
+
+Frontend (e.g., Vercel):
+- Root directory: `frontend`
+- Build: `npm run build`
+- Output: `.next`
+- Env: `NEXT_PUBLIC_API_BASE_URL` should point to your backend (e.g., `https://centralign-code-marathon.onrender.com`).
+
+Common pitfalls:
+- 404 on Vercel if root is not set to `frontend`.
+- Mongo connection errors if Atlas IP whitelist doesn’t include your host.
+- CORS: set `FRONTEND_ORIGIN` to your deployed frontend URL for the backend service.
