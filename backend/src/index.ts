@@ -10,6 +10,13 @@ import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
 
+const defaultOrigins = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "https://centr-align-code-marathon.vercel.app",
+  "https://centralign-code-marathon.vercel.app",
+];
+
 const allowedOrigins = (config.frontendOrigin || "")
   .split(",")
   .map((o) => o.trim())
@@ -17,7 +24,15 @@ const allowedOrigins = (config.frontendOrigin || "")
 
 app.use(
   cors({
-    origin: allowedOrigins.length ? allowedOrigins : "*",
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      const list = allowedOrigins.length ? allowedOrigins : defaultOrigins;
+      if (list.includes(origin)) return callback(null, true);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    optionsSuccessStatus: 200,
   })
 );
 app.use(express.json({ limit: "5mb" }));
@@ -26,10 +41,17 @@ app.get("/", (_req, res) => {
   res.json({ status: "ok" });
 });
 
+// primary routes
 app.use("/auth", authRoutes);
 app.use("/forms", formRoutes);
 app.use(submissionRoutes); // includes /forms/:id/submit + submissions
 app.use("/upload", uploadRoutes);
+
+// API aliases (for deployments using /api/* paths)
+app.use("/api/auth", authRoutes);
+app.use("/api/forms", formRoutes);
+app.use("/api", submissionRoutes);
+app.use("/api/upload", uploadRoutes);
 
 app.use(errorHandler);
 
