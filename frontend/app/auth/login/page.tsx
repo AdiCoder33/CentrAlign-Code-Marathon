@@ -52,6 +52,11 @@ export default function LoginPage() {
             required
           />
           {error && <p style={{ color: "red" }}>{error}</p>}
+          {loading && (
+            <p className="muted" style={{ marginBottom: 8 }}>
+              Backend server may be waking up, please wait a few seconds...
+            </p>
+          )}
           <button className="btn-primary" type="submit" disabled={loading}>
             {loading ? "Signing in..." : "Login"}
           </button>
