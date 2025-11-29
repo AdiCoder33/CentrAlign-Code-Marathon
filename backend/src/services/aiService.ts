@@ -134,6 +134,12 @@ const callLLM = async (userPrompt: string): Promise<FormSchema | null> => {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${config.llmApiKey}`,
+        // OpenRouter recommends these headers for allow-listing.
+        "HTTP-Referer":
+          process.env.SITE_URL ||
+          process.env.FRONTEND_ORIGIN ||
+          "http://localhost:3000",
+        "X-Title": process.env.SITE_TITLE || "AI Form Generator",
       },
       body: JSON.stringify(body),
     });
