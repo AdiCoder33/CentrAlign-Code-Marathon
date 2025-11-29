@@ -72,31 +72,46 @@ export default function FormDetailPage() {
 
   return (
     <div className="page-shell">
-      <div className="card">
-        <h2>{form.title}</h2>
-        <p>{form.purpose}</p>
-        {form.schema.description && <p>{form.schema.description}</p>}
-        <p className="pill">
-          Created {new Date(form.createdAt).toLocaleString()}
-        </p>
-        {form.summary && <p><strong>Summary:</strong> {form.summary}</p>}
+      <div className="detail-hero">
+        <div className="detail-head">
+          <div>
+            <p className="eyebrow">Form Overview</p>
+            <h2 className="detail-title">{form.title}</h2>
+            <p className="muted">
+              {form.purpose || form.schema.description || "Generated form"}
+            </p>
+            <div className="pills" style={{ marginTop: 8 }}>
+              <span className="pill">
+                Created {new Date(form.createdAt).toLocaleString()}
+              </span>
+              <span className="pill">
+                {form.referenceMedia?.length || 0} reference media
+              </span>
+            </div>
+          </div>
+          <div className="cta-group">
+            <Link href={`/form/${id}`} className="btn-primary">
+              Open public form
+            </Link>
+            <Link href="/dashboard" className="btn-secondary">
+              Back to dashboard
+            </Link>
+          </div>
+        </div>
+        {form.summary && (
+          <p style={{ marginTop: 12 }}>
+            <strong>Summary:</strong> {form.summary}
+          </p>
+        )}
         {form.referenceMedia && form.referenceMedia.length > 0 && (
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <div className="media-grid">
             {form.referenceMedia.map((url) => (
-              <img
-                key={url}
-                src={url}
-                alt="reference"
-                style={{ width: 100, height: 100, objectFit: "cover", borderRadius: 8 }}
-              />
+              <div key={url} className="media-thumb">
+                <img src={url} alt="reference" />
+              </div>
             ))}
           </div>
         )}
-        <div style={{ marginTop: 12 }}>
-          <Link href={`/form/${id}`} className="btn-secondary">
-            Open public form
-          </Link>
-        </div>
       </div>
 
       <div className="card">
